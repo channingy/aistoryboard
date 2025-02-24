@@ -27,7 +27,7 @@ import PosterSwiper from '@/components/home/PosterSwiper.vue'
             type="primary" 
             size="large"
             class="text-lg px-12 py-4 rounded-full hover:scale-105 transition-transform"
-            @click="$router.push('/create')"
+            @click="$router.push('/script-input')"
           >
             开始创作
           </el-button>
