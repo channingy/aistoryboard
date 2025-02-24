@@ -1,156 +1,224 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { Upload, Edit } from '@element-plus/icons-vue'
-import { ElNotification } from 'element-plus'
+import { Upload, Document, Edit } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
 
-// 文本输入相关
-const scriptText = ref('')
-const maxLength = 5000
+// 模式切换
+const isFileMode = ref(false)
+const scriptContent = ref('')
+const isDragging = ref(false)
+const isParsing = ref(false)
 
-const textCount = computed(() => scriptText.value.length)
+// 文件上传配置
+const acceptTypes = [
+  '.txt',    // 文本文件
+  '.doc',    // Word 文档
+  '.docx',   // Word 文档 (新格式)
+  '.xls',    // Excel 文件
+  '.xlsx',   // Excel 文件 (新格式)
+  '.csv'     // CSV 文件
+]
+const maxFileSize = 10 * 1024 * 1024 // 10MB
+
+// 文本输入配置
+const maxLength = 1000
+const textCount = computed(() => scriptContent.value.length)
 const isOverLimit = computed(() => textCount.value > maxLength)
 
-// 文件上传相关
-const parsing = ref(false)
-const parseProgress = ref(0)
-const fileList = ref([])
-
-// 处理超出文件数限制
-function handleExceed() {
-  ElNotification({
-    title: '上传失败',
-    message: '只能上传一个文件',
-    type: 'warning'
-  })
+// 处理模式切换
+function toggleMode() {
+  isFileMode.value = !isFileMode.value
 }
 
 // 处理文件上传
-function handleUpload(file) {
-  parsing.value = true
-  parseProgress.value = 0
+function handleFileUpload(file) {
+  if (!validateFileType(file)) {
+    return false
+  }
+  if (file.size > maxFileSize) {
+    ElMessage.error('文件大小不能超过10MB')
+    return false
+  }
+
+  // 这里可以添加文件处理逻辑
+  console.log('文件上传成功:', file.name)
+  return true
+}
+
+// 验证文件类型
+function validateFileType(file) {
+  const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase()
+  if (!acceptTypes.includes(ext)) {
+    ElMessage.error(`不支持的文件格式，请上传以下格式文件：${acceptTypes.join('、')}`)
+    return false
+  }
+  return true
+}
+
+// 处理解析
+async function handleParse() {
+  if (!scriptContent.value.trim()) {
+    ElMessage.warning('请输入剧本内容')
+    return
+  }
   
-  // 模拟解析进度
-  const timer = setInterval(() => {
-    parseProgress.value += 10
-    if (parseProgress.value >= 100) {
-      clearInterval(timer)
-      parsing.value = false
-    }
-  }, 300)
+  isParsing.value = true
+  try {
+    // 模拟解析过程
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    ElMessage.success('解析完成')
+  } finally {
+    isParsing.value = false
+  }
 }
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-900 flex flex-col">
-    <!-- 顶部提示区 -->
-    <div class="w-full bg-gray-800/50 py-3 px-6 flex justify-between items-center">
-      <span class="text-gray-300">Get started by uploading a script or generating one with AI</span>
-      <div class="flex items-center gap-3">
-        <span class="text-gray-300">Start from scratch</span>
-        <el-button class="!bg-gray-800 !text-white border border-gray-700">
-          BLANK PROJECT
-        </el-button>
-      </div>
-    </div>
+  <!-- 全屏深色背景 -->
+  <div class="fixed inset-0 bg-gray-900"></div>
+  
+  <!-- 页面内容 -->
+  <div class="relative min-h-screen w-full flex flex-col">
+    <!-- 头部导航 -->
+    <AppHeader class="w-full" />
 
     <!-- 主内容区 -->
-    <div class="flex-1 p-6 flex justify-center">
-      <div class="w-[80%] flex gap-6">
-        <!-- 左侧文本输入区 -->
-        <div class="flex-1 bg-gray-800/50 rounded-lg p-6">
-          <div class="flex items-center gap-2 mb-6">
-            <el-icon class="text-xl text-gray-300"><Upload /></el-icon>
-            <h2 class="text-xl text-white">Upload your script</h2>
-          </div>
-          <p class="text-gray-400 mb-6">
-            Turn your Final Draft, Word, CSV, PDF or TXT file into a storyboard or video.
-          </p>
-          <div class="space-y-4">
-            <el-button 
-              type="primary" 
-              class="w-full !bg-white !text-gray-900 hover:!bg-gray-100"
-            >
-              UPLOAD SCRIPT
-            </el-button>
-            <div class="relative">
-              <el-input
-                v-model="scriptText"
-                type="textarea"
-                :maxlength="maxLength"
-                :autosize="{ minRows: 12, maxRows: 20 }"
-                placeholder="Paste your script here..."
-                resize="none"
-                class="script-textarea"
-              />
-              <div 
-                class="word-count absolute right-3 bottom-2"
-                :class="{ 'text-red-500': isOverLimit }"
-              >
-                {{ isOverLimit ? `-${textCount - maxLength}` : `${textCount}/${maxLength}` }}
-              </div>
+    <main class="flex-1 w-full flex justify-center items-start py-12">
+      <!-- 白色内容容器 -->
+      <div class="script-container bg-white rounded-2xl w-[800px] mx-4">
+        <!-- 切换按钮 -->
+        <el-button 
+          class="w-full h-12 text-base bg-blue-500 hover:bg-blue-600"
+          type="primary"
+          @click="toggleMode"
+        >
+          <el-icon class="mr-2"><Upload /></el-icon>
+          {{ isFileMode ? '切换到文本输入' : '切换到文件上传' }}
+        </el-button>
+
+        <!-- 输入区域 -->
+        <div class="input-area mt-6">
+          <!-- 文本输入模式 -->
+          <div v-show="!isFileMode">
+            <el-input
+              v-model="scriptContent"
+              type="textarea"
+              :maxlength="maxLength"
+              :autosize="{ minRows: 16, maxRows: 20 }"
+              placeholder="请输入剧本内容..."
+              resize="none"
+              class="script-textarea"
+            />
+            <div class="word-count">
+              {{ textCount }}/{{ maxLength }}
             </div>
           </div>
+
+          <!-- 文件上传模式 -->
+          <el-upload
+            v-show="isFileMode"
+            class="upload-area"
+            drag
+            :accept="acceptTypes.join(',')"
+            :before-upload="handleFileUpload"
+            :auto-upload="false"
+          >
+            <el-icon class="text-6xl mb-4"><Document /></el-icon>
+            <div class="upload-text">
+              <p class="text-lg mb-2">拖拽文件到此处或点击上传</p>
+              <p class="text-gray-400 text-sm">
+                支持格式：TXT、Word、Excel、CSV
+              </p>
+            </div>
+          </el-upload>
         </div>
 
-        <!-- 右侧 AI 助手区 -->
-        <div class="flex-1 bg-gray-800/50 rounded-lg p-6">
-          <div class="flex items-center gap-2 mb-6">
-            <el-icon class="text-xl text-gray-300"><Edit /></el-icon>
-            <h2 class="text-xl text-white">AI Script Assistant</h2>
-          </div>
-          <p class="text-gray-400 mb-6">
-            Provide an idea, and our AI Script Assistant will generate a full script for you, bringing your concepts to life.
-          </p>
-          <el-input
-            type="textarea"
-            :autosize="{ minRows: 4, maxRows: 6 }"
-            placeholder="A medieval knight fights a Dracorax to save his village from ruin"
-            class="ai-prompt-input mb-4"
-          />
-          <el-button 
-            type="primary"
-            class="w-full !bg-white !text-gray-900 hover:!bg-gray-100"
-          >
-            GENERATE SCRIPT
-          </el-button>
-          <p class="text-gray-500 text-sm mt-2">
-            Instantly develop your storyline into a script for storyboard and video generation.
-          </p>
-        </div>
+        <!-- 解析按钮 -->
+        <el-button 
+          class="w-full h-12 text-base mt-6 bg-green-500 hover:bg-green-600"
+          type="success"
+          :disabled="isOverLimit || !scriptContent.trim()"
+          @click="handleParse"
+        >
+          开始解析
+        </el-button>
       </div>
-    </div>
+    </main>
+
+    <!-- 底部 -->
+    <AppFooter class="w-full" />
   </div>
 </template>
 
 <style scoped>
+.script-container {
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.input-area {
+  border: 1px dashed #dcdfe6;
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+  min-height: 400px;
+  background: #ffffff;
+}
+
 .script-textarea :deep(.el-textarea__inner) {
-  background: #1a1a1a;
-  border-color: #4a4a4a;
-  color: #fff;
-  transition: border-color 0.3s;
-  font-family: monospace;
+  border: none;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #2c3e50;
+  background: transparent;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
-.script-textarea :deep(.el-textarea__inner:focus),
-.ai-prompt-input :deep(.el-textarea__inner:focus) {
-  border-color: #409EFF;
-  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
-}
-
-.ai-prompt-input :deep(.el-textarea__inner) {
-  background: #1a1a1a;
-  border-color: #4a4a4a;
-  color: #fff;
-  transition: all 0.3s;
+.script-textarea :deep(.el-textarea__inner:focus) {
+  box-shadow: none;
 }
 
 .word-count {
-  font-size: 12px;
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  font-size: 14px;
   color: #909399;
 }
 
 :deep(.el-button) {
-  font-weight: 600;
-  height: 42px;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+:deep(.el-button:not(:disabled):hover) {
+  transform: translateY(-1px);
+  transition: all 0.2s;
+}
+
+.upload-area {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+:deep(.el-upload-dragger) {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed #dcdfe6;
+  transition: all 0.3s;
+}
+
+:deep(.el-upload-dragger:hover) {
+  border-color: var(--el-color-primary);
 }
 </style> 

@@ -4,7 +4,7 @@ const currentYear = new Date().getFullYear()
 </script>
 
 <template>
-  <footer class="w-full py-4 border-t border-gray-800/30">
+  <footer class="w-full py-4 border-t border-gray-800/30 mb-4">
     <div class="w-full px-6 flex flex-col md:flex-row items-center md:items-start md:justify-between">
       <!-- 左侧区域 - 与header对齐 -->
       <div class="flex items-center mb-4 md:mb-0">
