@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2项目设定系统</title>
+    <style>
+        /* 设计系统变量 */
+        :root {
+            --primary: #3366FF; /* 2025影视蓝 */
+            --danger: #FF4D4F;
+            --border: #E5E8EC;
+            --radius: 6px;
+            --shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: 'Inter', system-ui;
+            background: #F7F9FC;
+            padding: 32px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 卡片容器 */
+        .setting-card {
+            background: #FFFFFF;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* 标题区域 */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .section-title {
+            font-size: 18px;
+            color: #1A1D28;
+            margin: 0;
+        }
+
+        /* 场景设定表单 */
+        .scene-form {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-group label {
+            font-size: 14px;
+            color: #5A6070;
+        }
+        textarea, select, input[type="time"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* 角色管理 */
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+        .character-card {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            position: relative;
+            transition: box-shadow 0.2s;
+        }
+        .character-card:hover {
+            box-shadow: var(--shadow);
+        }
+
+        /* 头像上传 */
+        .avatar-upload {
+            width: 80px;
+            height: 80px;
+            border: 1px dashed var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F8FAFF;
+        }
+        .avatar-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        /* 角色信息 */
+        .character-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .name-input {
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 4px;
+        }
+        .desc-input {
+            border: none;
+            resize: none;
+            font-size: 13px;
+            color: #5A6070;
+            line-height: 1.5;
+            padding: 4px;
+            min-height: 60px;
+        }
+
+        /* 功能按钮 */
+        .add-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .scene-form, .character-grid {
+                grid-template-columns: 1fr;
+            }
+            .character-card {
+                flex-direction: column;
+            }
+            .avatar-upload {
+                width: 100%;
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 场景设定 -->
+        <div class="setting-card">
+            <div class="card-header">
+                <h2 class="section-title">场景设定</h2>
+            </div>
+            <div class="scene-form">
+                <div class="form-group">
+                    <label>场景描述</label>
+                    <textarea rows="3">INT. 实验室 - 深夜</textarea>
+                </div>
+                <div class="form-group">
+                    <label>发生时间</label>
+                    <input type="time" value="02:30">
+                </div>
+                <div class="form-group">
+                    <label>天气状态</label>
+                    <select>
+                        <option>暴雨</option>
+                        <option>晴</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 角色设定 -->
+        <div class="setting-card">
+            <div class="card-header">
+                <h2 class="section-title">角色设定</h2>
+                <button class="add-btn" onclick="addCharacter()">+ 新增角色</button>
+            </div>
+            <div class="character-grid">
+                <!-- 角色模板 -->
+                <div class="character-card">
+                    <div class="avatar-upload" onclick="triggerUpload(this)">
+                        <span>点击上传</span>
+                        <input type="file" hidden>
+                    </div>
+                    <div class="character-info">
+                        <input class="name-input" type="text" value="张三">
+                        <textarea class="desc-input">金丝眼镜/实验袍破损</textarea>
+                    </div>
+                    <button class="delete-btn" onclick="deleteCharacter(this)">×</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 角色管理逻辑
+        function addCharacter() {
+            const template = `
+            <div class="character-card">
+                <div class="avatar-upload" onclick="triggerUpload(this)">
+                    <span>点击上传</span>
+                    <input type="file" hidden>
+                </div>
+                <div class="character-info">
+                    <input class="name-input" type="text" placeholder="角色姓名">
+                    <textarea class="desc-input" placeholder="特征描述"></textarea>
+                </div>
+                <button class="delete-btn" onclick="deleteCharacter(this)">×</button>
+            </div>`;
+            document.querySelector('.character-grid').insertAdjacentHTML('beforeend', template);
+        }
+
+        function deleteCharacter(btn) {
+            btn.closest('.character-card').remove();
+        }
+
+        // 头像上传处理
+        function triggerUpload(uploadBox) {
+            const fileInput = uploadBox.querySelector('input[type="file"]');
+            fileInput.click();
+            
+            fileInput.onchange = function(e) {
+                const file = e.target.files;
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadBox.innerHTML = `<img src="${e.target.result}" class="avatar-preview">`;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

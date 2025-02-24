@@ -1,9 +1,12 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { Upload, Document, Edit } from '@element-plus/icons-vue'
+import { Upload, Document } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
+
+const router = useRouter()
 
 // 模式切换
 const isFileMode = ref(false)
@@ -30,6 +33,9 @@ const isOverLimit = computed(() => textCount.value > maxLength)
 // 处理模式切换
 function toggleMode() {
   isFileMode.value = !isFileMode.value
+  if (isFileMode.value) {
+    scriptContent.value = ''
+  }
 }
 
 // 处理文件上传
@@ -69,6 +75,10 @@ async function handleParse() {
     // 模拟解析过程
     await new Promise(resolve => setTimeout(resolve, 1500))
     ElMessage.success('解析完成')
+    // 解析完成后跳转到项目设定页面
+    router.push('/project-settings')
+  } catch (error) {
+    ElMessage.error('解析失败，请重试')
   } finally {
     isParsing.value = false
   }
@@ -80,14 +90,14 @@ async function handleParse() {
   <div class="fixed inset-0 bg-gray-900"></div>
   
   <!-- 页面内容 -->
-  <div class="relative min-h-screen w-full flex flex-col">
+  <div class="fixed inset-0 w-full h-full overflow-hidden"> 
     <!-- 头部导航 -->
     <AppHeader class="w-full" />
 
     <!-- 主内容区 -->
-    <main class="flex-1 w-full flex justify-center items-start py-12">
+    <main class="flex-1 w-full flex justify-center items-start pt-2 pb-12">
       <!-- 白色内容容器 -->
-      <div class="script-container bg-white rounded-2xl w-[800px] mx-4">
+      <div class="script-container bg-white rounded-2xl w-[800px] mx-4 h-[80vh] mt-2 mb-12">
         <!-- 切换按钮 -->
         <el-button 
           class="w-full h-12 text-base bg-blue-500 hover:bg-blue-600"
@@ -137,12 +147,13 @@ async function handleParse() {
 
         <!-- 解析按钮 -->
         <el-button 
-          class="w-full h-12 text-base mt-6 bg-green-500 hover:bg-green-600"
+          class="w-full h-12 text-base mt-2 bg-green-500 hover:bg-green-600"
           type="success"
-          :disabled="isOverLimit || !scriptContent.trim()"
+          :loading="isParsing"
+          :disabled="isOverLimit || (!isFileMode && !scriptContent.trim())"
           @click="handleParse"
         >
-          开始解析
+          {{ isParsing ? '解析中...' : '开始解析' }}
         </el-button>
       </div>
     </main>

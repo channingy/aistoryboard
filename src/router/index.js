@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ScriptInput from '../views/ScriptInput.vue'
+import ProjectSettings from '../views/ProjectSettings.vue'
 
 // ... 其他导入
 
@@ -16,6 +17,11 @@ export const router = createRouter({
       path: '/script-input',
       name: 'scriptInput',
       component: ScriptInput
+    },
+    {
+      path: '/project-settings',
+      name: 'projectSettings',
+      component: ProjectSettings
     },
     // 将所有未匹配的路由重定向到首页
     {
