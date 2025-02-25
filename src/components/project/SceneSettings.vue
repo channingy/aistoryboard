@@ -41,59 +41,63 @@ const maxDescLength = 200
 </script>
 
 <template>
-  <div class="scene-settings bg-white rounded-xl p-6 shadow-lg">
-    <h2 class="text-xl font-semibold mb-6">场景设定</h2>
-    
-    <el-form :model="sceneData" label-position="top">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- 场景描述 -->
-        <div class="col-span-1 md:col-span-2">
-          <el-form-item label="场景描述">
-            <el-input
-              v-model="sceneData.description"
-              type="textarea"
-              :maxlength="maxDescLength"
-              :rows="3"
-              placeholder="请输入场景描述，例如：INT. 实验室 - 深夜"
-              show-word-limit
-            />
-          </el-form-item>
-        </div>
-
-        <!-- 时间和天气设定 -->
-        <div class="col-span-1">
-          <el-form-item label="时间">
-            <el-time-picker
-              v-model="sceneData.time"
-              format="HH:mm"
-              placeholder="选择时间"
-              class="w-full"
-            />
-          </el-form-item>
-
-          <el-form-item label="天气" class="mt-4">
-            <el-select
-              v-model="sceneData.weather"
-              placeholder="选择天气"
-              class="w-full"
-            >
-              <el-option
-                v-for="item in weatherOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-        </div>
+  <el-form :model="sceneData" label-position="top" class="scene-form">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <!-- 场景描述 -->
+      <div class="col-span-1 md:col-span-2">
+        <el-form-item label="场景描述" class="mb-2">
+          <el-input
+            v-model="sceneData.description"
+            type="textarea"
+            :maxlength="maxDescLength"
+            :rows="2"
+            placeholder="请输入场景描述，例如：INT. 实验室 - 深夜"
+            show-word-limit
+            resize="none"
+          />
+        </el-form-item>
       </div>
-    </el-form>
-  </div>
+
+      <!-- 时间和天气设定 -->
+      <div class="col-span-1 space-y-2">
+        <el-form-item label="时间" class="mb-2">
+          <el-time-picker
+            v-model="sceneData.time"
+            format="HH:mm"
+            placeholder="选择时间"
+            class="w-full"
+          />
+        </el-form-item>
+
+        <el-form-item label="天气" class="mb-0">
+          <el-select
+            v-model="sceneData.weather"
+            placeholder="选择天气"
+            class="w-full"
+          >
+            <el-option
+              v-for="item in weatherOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </div>
+    </div>
+  </el-form>
 </template>
 
 <style scoped>
-.scene-settings {
-  transition: all 0.3s ease;
+.scene-form {
+  padding: 0.5rem 0;
+}
+
+:deep(.el-form-item__label) {
+  padding: 0 0 4px 0;
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.2;
 }
 
 :deep(.el-input__wrapper),
@@ -107,13 +111,16 @@ const maxDescLength = 200
   border-color: #d1d5db;
 }
 
-:deep(.el-form-item__label) {
-  font-size: 0.875rem;
-  color: #374151;
-  margin-bottom: 0.5rem;
+:deep(.el-textarea__inner) {
+  resize: none;
+  min-height: 60px !important;
 }
 
-:deep(.el-form--label-top .el-form-item__label) {
-  padding: 0;
+:deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+:deep(.el-form--label-top) {
+  padding-top: 0;
 }
 </style> 

@@ -145,7 +145,7 @@ async function handleParse() {
           </el-upload>
         </div>
 
-        <!-- 解析按钮 -->
+        <!-- 创作按钮 -->
         <el-button 
           class="w-full h-12 text-base mt-2 bg-green-500 hover:bg-green-600"
           type="success"
@@ -153,7 +153,7 @@ async function handleParse() {
           :disabled="isOverLimit || (!isFileMode && !scriptContent.trim())"
           @click="handleParse"
         >
-          {{ isParsing ? '解析中...' : '开始解析' }}
+          {{ isParsing ? '创作中...' : '开始创作' }}
         </el-button>
       </div>
     </main>
