@@ -6,6 +6,9 @@ import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import SceneSettings from '@/components/project/SceneSettings.vue'
 import CharacterCard from '@/components/project/CharacterCard.vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 // 场景设定数据
 const sceneSettings = ref({
@@ -64,7 +67,8 @@ const saveSettings = () => {
 // 开始解析
 const startParsing = () => {
   ElMessage.success('开始解析...')
-  // TODO: 实现解析逻辑
+  // 跳转到分镜列表页面
+  router.push('/shot-list')
 }
 </script>
 

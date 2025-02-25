@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ScriptInput from '../views/ScriptInput.vue'
 import ProjectSettings from '../views/ProjectSettings.vue'
+import ShotList from '../views/ShotList.vue'
 
 // ... 其他导入
 
@@ -22,6 +23,11 @@ export const router = createRouter({
       path: '/project-settings',
       name: 'projectSettings',
       component: ProjectSettings
+    },
+    {
+      path: '/shot-list',
+      name: 'shotList',
+      component: ShotList
     },
     // 将所有未匹配的路由重定向到首页
     {

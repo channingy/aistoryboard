@@ -1,0 +1,302 @@
+<script setup>
+import { ref } from 'vue'
+import { ElMessage } from 'element-plus'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
+import {
+  framingOptions,
+  cameraMovementOptions,
+  cameraAngleOptions,
+  toneOptions,
+  contrastOptions,
+  colorTempOptions
+} from '@/utils/shotTerms'
+
+// 场景信息
+const sceneInfo = ref({
+  description: 'INT. 实验室 - 深夜',
+  time: '23:30',
+  weather: '晴朗',
+  characters: ['张三', '李四']
+})
+
+// 分镜列表数据
+const shotList = ref([
+  {
+    id: 1,
+    content: '张三和李四在对话',
+    framing: 'full',
+    movement: 'fixed',
+    angle: 'eye_level',
+    tone: 'mid_key',
+    contrast: 'plain',
+    colorTemp: 'cool'
+  }
+])
+
+// 编辑状态
+const editingId = ref(null)
+
+// 开始编辑
+const startEdit = (id) => {
+  editingId.value = id
+}
+
+// 保存编辑
+const saveEdit = (id) => {
+  editingId.value = null
+  ElMessage.success('保存成功')
+}
+
+// 生成故事板
+const generateStoryboard = () => {
+  ElMessage.success('开始生成故事板...')
+  // TODO: 实现故事板生成逻辑
+}
+</script>
+
+<template>
+  <div class="fixed inset-0 w-full h-full overflow-auto bg-gray-900">
+    <!-- 头部导航 -->
+    <AppHeader />
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-2 py-6">
+      <div class="max-w-[1400px] mx-auto space-y-4">
+        <!-- 页面标题 -->
+        <div class="flex items-center">
+          <h1 class="text-2xl font-bold text-white">分镜列表</h1>
+        </div>
+
+        <!-- 容器1：信息区 -->
+        <div class="bg-white rounded-xl p-4 shadow-lg">
+          <div class="grid grid-cols-12 gap-4 items-start">
+            <!-- 场景信息 -->
+            <div class="col-span-7 space-y-2">
+              <div class="text-sm text-gray-600 pl-1">场景：{{ sceneInfo.description }}</div>
+              <div class="text-sm text-gray-600 pl-1">时间：{{ sceneInfo.time }}</div>
+              <div class="text-sm text-gray-600 pl-1">天气：{{ sceneInfo.weather }}</div>
+            </div>
+
+            <!-- 主要角色 -->
+            <div class="col-span-3">
+              <div class="text-sm text-gray-600">
+                主要角色：{{ sceneInfo.characters.join('，') }}
+              </div>
+            </div>
+
+            <!-- 生成故事板按钮 -->
+            <div class="col-span-2 text-right">
+              <el-button
+                type="primary"
+                @click="generateStoryboard"
+              >
+                生成故事板
+              </el-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 容器2：列表容器 -->
+        <div class="bg-white rounded-xl p-4 shadow-lg">
+          <!-- 列表标题栏 -->
+          <el-table :data="shotList" style="width: 100%" border>
+            <el-table-column label="镜号" width="80" align="center">
+              <template #default="{ $index }">
+                {{ $index + 1 }}
+              </template>
+            </el-table-column>
+
+            <el-table-column label="画面内容" min-width="300">
+              <template #default="{ row }">
+                <template v-if="editingId === row.id">
+                  <el-input v-model="row.content" type="textarea" :rows="2" />
+                </template>
+                <template v-else>
+                  {{ row.content }}
+                </template>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="景别" width="140">
+              <template #default="{ row }">
+                <template v-if="editingId === row.id">
+                  <el-select v-model="row.framing" class="w-full">
+                    <el-option
+                      v-for="option in framingOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </template>
+                <template v-else>
+                  {{ framingOptions.find(opt => opt.value === row.framing)?.label }}
+                </template>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="镜头运动" width="140">
+              <template #default="{ row }">
+                <template v-if="editingId === row.id">
+                  <el-select v-model="row.movement" class="w-full">
+                    <el-option
+                      v-for="option in cameraMovementOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </template>
+                <template v-else>
+                  {{ cameraMovementOptions.find(opt => opt.value === row.movement)?.label }}
+                </template>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="拍摄角度" width="140">
+              <template #default="{ row }">
+                <template v-if="editingId === row.id">
+                  <el-select v-model="row.angle" class="w-full">
+                    <el-option
+                      v-for="option in cameraAngleOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </template>
+                <template v-else>
+                  {{ cameraAngleOptions.find(opt => opt.value === row.angle)?.label }}
+                </template>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="影调" width="120">
+              <template #default="{ row }">
+                <template v-if="editingId === row.id">
+                  <el-select v-model="row.tone" class="w-full">
+                    <el-option
+                      v-for="option in toneOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </template>
+                <template v-else>
+                  {{ toneOptions.find(opt => opt.value === row.tone)?.label }}
+                </template>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="对比度" width="120">
+              <template #default="{ row }">
+                <template v-if="editingId === row.id">
+                  <el-select v-model="row.contrast" class="w-full">
+                    <el-option
+                      v-for="option in contrastOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </template>
+                <template v-else>
+                  {{ contrastOptions.find(opt => opt.value === row.contrast)?.label }}
+                </template>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="色温" width="120">
+              <template #default="{ row }">
+                <template v-if="editingId === row.id">
+                  <el-select v-model="row.colorTemp" class="w-full">
+                    <el-option
+                      v-for="option in colorTempOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </template>
+                <template v-else>
+                  {{ colorTempOptions.find(opt => opt.value === row.colorTemp)?.label }}
+                </template>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="操作" width="100" align="center">
+              <template #default="{ row }">
+                <template v-if="editingId === row.id">
+                  <el-button
+                    type="success"
+                    link
+                    @click="saveEdit(row.id)"
+                  >
+                    保存
+                  </el-button>
+                </template>
+                <template v-else>
+                  <el-button
+                    type="primary"
+                    link
+                    @click="startEdit(row.id)"
+                  >
+                    编辑
+                  </el-button>
+                </template>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+    </main>
+
+    <!-- 底部 -->
+    <AppFooter class="mt-4" />
+  </div>
+</template>
+
+<style scoped>
+.container {
+  min-height: calc(100vh - 64px - 48px);
+}
+
+:deep(.el-table) {
+  --el-table-border-color: #e5e7eb;
+  --el-table-header-bg-color: #f3f4f6;
+  --el-table-row-hover-bg-color: #f9fafb;
+}
+
+:deep(.el-table__header) {
+  font-weight: 600;
+  color: #374151;
+}
+
+:deep(.el-button--primary) {
+  background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+  border: none;
+  font-weight: 500;
+}
+
+:deep(.el-button--primary:hover) {
+  background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+  transform: translateY(-1px);
+}
+
+:deep(.el-select) {
+  width: 100%;
+}
+
+:deep(.el-input__wrapper),
+:deep(.el-textarea__inner) {
+  box-shadow: none !important;
+  border: 1px solid #e5e7eb;
+}
+
+:deep(.el-input__wrapper:hover),
+:deep(.el-textarea__inner:hover) {
+  border-color: #d1d5db;
+}
+</style> 
