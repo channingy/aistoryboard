@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import {
@@ -12,13 +13,7 @@ import {
   colorTempOptions
 } from '@/utils/shotTerms'
 
-// 场景信息
-const sceneInfo = ref({
-  description: 'INT. 实验室 - 深夜',
-  time: '23:30',
-  weather: '晴朗',
-  characters: ['张三', '李四']
-})
+const router = useRouter()
 
 // 故事板设定弹窗
 const showSettingsDialog = ref(false)
@@ -40,11 +35,19 @@ const artStyleOptions = [
   { label: '电影风格', value: 'cinematic' }
 ]
 
+// 场景信息
+const sceneInfo = ref({
+  description: 'INT. 实验室 - 深夜',
+  time: '23:30',
+  weather: '晴朗',
+  characters: ['张三', '李四']
+})
+
 // 分镜列表数据
 const shotList = ref([
   {
     id: 1,
-    content: '张三和李四在对话',
+    content: '张三和李四在对话张三和李四在对话张三和李四在对话',
     framing: 'full',
     movement: 'fixed',
     angle: 'eye_level',
@@ -77,7 +80,14 @@ const generateStoryboard = () => {
 const confirmGenerate = () => {
   showSettingsDialog.value = false
   ElMessage.success('开始生成故事板...')
-  // TODO: 实现故事板生成逻辑
+  // 跳转到故事板列表页面，传递设置参数
+  router.push({
+    path: '/storyboard-list',
+    query: {
+      aspectRatio: storyboardSettings.value.aspectRatio,
+      artStyle: storyboardSettings.value.artStyle
+    }
+  })
 }
 </script>
 
@@ -123,155 +133,153 @@ const confirmGenerate = () => {
           </div>
         </div>
 
-        <!-- 容器2：列表容器 -->
+        <!-- 容器2：分镜列表 -->
         <div class="bg-white rounded-xl p-4 shadow-lg">
-          <!-- 列表标题栏 -->
-          <el-table :data="shotList" style="width: 100%" border>
-            <el-table-column label="镜号" width="80" align="center">
-              <template #default="{ $index }">
-                {{ $index + 1 }}
-              </template>
-            </el-table-column>
-
-            <el-table-column label="画面内容" min-width="300">
+          <el-table :data="shotList" style="width: 100%">
+            <el-table-column label="内容" min-width="300">
               <template #default="{ row }">
-                <template v-if="editingId === row.id">
-                  <el-input v-model="row.content" type="textarea" :rows="2" />
-                </template>
-                <template v-else>
-                  {{ row.content }}
-                </template>
+                <el-input
+                  v-if="editingId === row.id"
+                  v-model="row.content"
+                  type="textarea"
+                  :rows="2"
+                />
+                <span v-else>{{ row.content }}</span>
               </template>
             </el-table-column>
 
             <el-table-column label="景别" width="140">
               <template #default="{ row }">
-                <template v-if="editingId === row.id">
-                  <el-select v-model="row.framing" class="w-full">
-                    <el-option
-                      v-for="option in framingOptions"
-                      :key="option.value"
-                      :label="option.label"
-                      :value="option.value"
-                    />
-                  </el-select>
-                </template>
-                <template v-else>
+                <el-select
+                  v-if="editingId === row.id"
+                  v-model="row.framing"
+                >
+                  <el-option
+                    v-for="option in framingOptions"
+                    :key="option.value"
+                    :label="option.label"
+                    :value="option.value"
+                  />
+                </el-select>
+                <span v-else>
                   {{ framingOptions.find(opt => opt.value === row.framing)?.label }}
-                </template>
+                </span>
               </template>
             </el-table-column>
 
             <el-table-column label="镜头运动" width="140">
               <template #default="{ row }">
-                <template v-if="editingId === row.id">
-                  <el-select v-model="row.movement" class="w-full">
-                    <el-option
-                      v-for="option in cameraMovementOptions"
-                      :key="option.value"
-                      :label="option.label"
-                      :value="option.value"
-                    />
-                  </el-select>
-                </template>
-                <template v-else>
+                <el-select
+                  v-if="editingId === row.id"
+                  v-model="row.movement"
+                >
+                  <el-option
+                    v-for="option in cameraMovementOptions"
+                    :key="option.value"
+                    :label="option.label"
+                    :value="option.value"
+                  />
+                </el-select>
+                <span v-else>
                   {{ cameraMovementOptions.find(opt => opt.value === row.movement)?.label }}
-                </template>
+                </span>
               </template>
             </el-table-column>
 
             <el-table-column label="拍摄角度" width="140">
               <template #default="{ row }">
-                <template v-if="editingId === row.id">
-                  <el-select v-model="row.angle" class="w-full">
-                    <el-option
-                      v-for="option in cameraAngleOptions"
-                      :key="option.value"
-                      :label="option.label"
-                      :value="option.value"
-                    />
-                  </el-select>
-                </template>
-                <template v-else>
+                <el-select
+                  v-if="editingId === row.id"
+                  v-model="row.angle"
+                >
+                  <el-option
+                    v-for="option in cameraAngleOptions"
+                    :key="option.value"
+                    :label="option.label"
+                    :value="option.value"
+                  />
+                </el-select>
+                <span v-else>
                   {{ cameraAngleOptions.find(opt => opt.value === row.angle)?.label }}
-                </template>
+                </span>
               </template>
             </el-table-column>
 
             <el-table-column label="影调" width="120">
               <template #default="{ row }">
-                <template v-if="editingId === row.id">
-                  <el-select v-model="row.tone" class="w-full">
-                    <el-option
-                      v-for="option in toneOptions"
-                      :key="option.value"
-                      :label="option.label"
-                      :value="option.value"
-                    />
-                  </el-select>
-                </template>
-                <template v-else>
+                <el-select
+                  v-if="editingId === row.id"
+                  v-model="row.tone"
+                >
+                  <el-option
+                    v-for="option in toneOptions"
+                    :key="option.value"
+                    :label="option.label"
+                    :value="option.value"
+                  />
+                </el-select>
+                <span v-else>
                   {{ toneOptions.find(opt => opt.value === row.tone)?.label }}
-                </template>
+                </span>
               </template>
             </el-table-column>
 
             <el-table-column label="对比度" width="120">
               <template #default="{ row }">
-                <template v-if="editingId === row.id">
-                  <el-select v-model="row.contrast" class="w-full">
-                    <el-option
-                      v-for="option in contrastOptions"
-                      :key="option.value"
-                      :label="option.label"
-                      :value="option.value"
-                    />
-                  </el-select>
-                </template>
-                <template v-else>
+                <el-select
+                  v-if="editingId === row.id"
+                  v-model="row.contrast"
+                >
+                  <el-option
+                    v-for="option in contrastOptions"
+                    :key="option.value"
+                    :label="option.label"
+                    :value="option.value"
+                  />
+                </el-select>
+                <span v-else>
                   {{ contrastOptions.find(opt => opt.value === row.contrast)?.label }}
-                </template>
+                </span>
               </template>
             </el-table-column>
 
             <el-table-column label="色温" width="120">
               <template #default="{ row }">
-                <template v-if="editingId === row.id">
-                  <el-select v-model="row.colorTemp" class="w-full">
-                    <el-option
-                      v-for="option in colorTempOptions"
-                      :key="option.value"
-                      :label="option.label"
-                      :value="option.value"
-                    />
-                  </el-select>
-                </template>
-                <template v-else>
+                <el-select
+                  v-if="editingId === row.id"
+                  v-model="row.colorTemp"
+                >
+                  <el-option
+                    v-for="option in colorTempOptions"
+                    :key="option.value"
+                    :label="option.label"
+                    :value="option.value"
+                  />
+                </el-select>
+                <span v-else>
                   {{ colorTempOptions.find(opt => opt.value === row.colorTemp)?.label }}
-                </template>
+                </span>
               </template>
             </el-table-column>
 
-            <el-table-column label="操作" width="100" align="center">
+            <el-table-column label="操作" width="120" fixed="right">
               <template #default="{ row }">
-                <template v-if="editingId === row.id">
-                  <el-button
-                    type="success"
-                    link
-                    @click="saveEdit(row.id)"
-                  >
-                    保存
-                  </el-button>
-                </template>
-                <template v-else>
-                  <el-button
-                    type="primary"
-                    link
-                    @click="startEdit(row.id)"
-                  >
-                    编辑
-                  </el-button>
-                </template>
+                <el-button
+                  v-if="editingId === row.id"
+                  type="success"
+                  size="small"
+                  @click="saveEdit(row.id)"
+                >
+                  保存
+                </el-button>
+                <el-button
+                  v-else
+                  type="primary"
+                  size="small"
+                  @click="startEdit(row.id)"
+                >
+                  编辑
+                </el-button>
               </template>
             </el-table-column>
           </el-table>
