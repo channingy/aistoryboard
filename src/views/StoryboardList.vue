@@ -1,11 +1,12 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 
 const route = useRoute()
+const router = useRouter()
 
 // 获取路由参数
 const aspectRatio = computed(() => route.query.aspectRatio || '16:9')
@@ -95,8 +96,7 @@ const handleImageLoad = (id) => {
 
 // 编辑故事板
 const editStoryboard = (id) => {
-  // TODO: 跳转到故事板编辑页面
-  console.log('编辑故事板:', id)
+  router.push(`/storyboard/${id}`)
 }
 </script>
 
@@ -110,7 +110,7 @@ const editStoryboard = (id) => {
       <div class="max-w-[1400px] mx-auto space-y-4">
         <!-- 页面标题 -->
         <div class="flex items-center mb-4">
-          <h1 class="text-2xl font-bold text-white">故事板</h1>
+          <h1 class="text-2xl font-bold text-white">故事板列表</h1>
         </div>
 
         <!-- 故事板列表 -->

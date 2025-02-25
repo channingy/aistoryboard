@@ -4,6 +4,7 @@ import ScriptInput from '../views/ScriptInput.vue'
 import ProjectSettings from '../views/ProjectSettings.vue'
 import ShotList from '../views/ShotList.vue'
 import StoryboardList from '../views/StoryboardList.vue'
+import StoryboardDetail from '../views/StoryboardDetail.vue'
 
 // ... 其他导入
 
@@ -34,6 +35,11 @@ export const router = createRouter({
       path: '/storyboard-list',
       name: 'storyboardList',
       component: StoryboardList
+    },
+    {
+      path: '/storyboard/:id',
+      name: 'storyboardDetail',
+      component: StoryboardDetail
     },
     // 将所有未匹配的路由重定向到首页
     {
