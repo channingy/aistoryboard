@@ -20,6 +20,26 @@ const sceneInfo = ref({
   characters: ['张三', '李四']
 })
 
+// 故事板设定弹窗
+const showSettingsDialog = ref(false)
+const storyboardSettings = ref({
+  aspectRatio: '16:9', // 默认16:9横屏
+  artStyle: 'sketch' // 默认草图风格
+})
+
+// 宽高比选项
+const aspectRatioOptions = [
+  { label: '16:9 (横屏)', value: '16:9' },
+  { label: '1:1 (方形)', value: '1:1' },
+  { label: '9:16 (竖屏)', value: '9:16' }
+]
+
+// 艺术风格选项
+const artStyleOptions = [
+  { label: '草图风格', value: 'sketch' },
+  { label: '电影风格', value: 'cinematic' }
+]
+
 // 分镜列表数据
 const shotList = ref([
   {
@@ -50,6 +70,12 @@ const saveEdit = (id) => {
 
 // 生成故事板
 const generateStoryboard = () => {
+  showSettingsDialog.value = true
+}
+
+// 确认生成
+const confirmGenerate = () => {
+  showSettingsDialog.value = false
   ElMessage.success('开始生成故事板...')
   // TODO: 实现故事板生成逻辑
 }
@@ -255,6 +281,63 @@ const generateStoryboard = () => {
 
     <!-- 底部 -->
     <AppFooter class="mt-4" />
+
+    <!-- 故事板设定弹窗 -->
+    <el-dialog
+      v-model="showSettingsDialog"
+      title="故事板设定"
+      width="500px"
+      :close-on-click-modal="false"
+      class="storyboard-settings-dialog"
+    >
+      <div class="space-y-6">
+        <!-- 宽高比选项 -->
+        <div class="space-y-2">
+          <h3 class="text-base font-medium text-gray-700">宽高比</h3>
+          <div class="grid grid-cols-3 gap-4">
+            <div
+              v-for="option in aspectRatioOptions"
+              :key="option.value"
+              class="aspect-ratio-option"
+              :class="{ 'active': storyboardSettings.aspectRatio === option.value }"
+              @click="storyboardSettings.aspectRatio = option.value"
+            >
+              {{ option.label }}
+            </div>
+          </div>
+        </div>
+
+        <!-- 艺术风格选项 -->
+        <div class="space-y-2">
+          <h3 class="text-base font-medium text-gray-700">艺术风格</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div
+              v-for="option in artStyleOptions"
+              :key="option.value"
+              class="art-style-option"
+              :class="{ 'active': storyboardSettings.artStyle === option.value }"
+              @click="storyboardSettings.artStyle = option.value"
+            >
+              {{ option.label }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <template #footer>
+        <div class="flex justify-end">
+          <el-button
+            type="primary"
+            size="large"
+            class="w-32 generate-btn"
+            @click="confirmGenerate"
+          >
+            生成
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -298,5 +381,48 @@ const generateStoryboard = () => {
 :deep(.el-input__wrapper:hover),
 :deep(.el-textarea__inner:hover) {
   border-color: #d1d5db;
+}
+
+/* 故事板设定弹窗样式 */
+:deep(.storyboard-settings-dialog) {
+  border-radius: 12px;
+}
+
+:deep(.storyboard-settings-dialog .el-dialog__header) {
+  padding: 20px 24px;
+  margin: 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+:deep(.storyboard-settings-dialog .el-dialog__title) {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+:deep(.storyboard-settings-dialog .el-dialog__body) {
+  padding: 24px;
+}
+
+:deep(.storyboard-settings-dialog .el-dialog__footer) {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.aspect-ratio-option,
+.art-style-option {
+  @apply flex items-center justify-center px-4 py-3 rounded-lg border-2 border-gray-200 
+         text-gray-600 cursor-pointer transition-all duration-200 hover:border-blue-500 hover:text-blue-600;
+}
+
+.aspect-ratio-option.active,
+.art-style-option.active {
+  @apply border-blue-500 bg-blue-50 text-blue-600;
+}
+
+.generate-btn {
+  @apply bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700
+         text-white font-medium rounded-lg transition-all duration-200
+         hover:shadow-md hover:-translate-y-0.5;
 }
 </style> 
