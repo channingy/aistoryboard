@@ -36,8 +36,8 @@ const storyboard = ref({
 
 // 场景信息
 const sceneInfo = ref({
-  description: 'INT. 书房 - 深夜',
-  time: '23:30',
+  description: '书房',
+  time: '深夜',
   weather: '晴朗',
   characters: ['张三', '李四']
 })
@@ -75,7 +75,7 @@ onMounted(() => {
     <AppHeader />
 
     <!-- 主内容区 -->
-    <main class="container mx-auto px-4 py-2">
+    <main class="container mx-auto px-4 py-2 mb-16">
       <div class="max-w-[1400px] mx-auto">
         <!-- 页面标题 -->
         <div class="flex items-center justify-between mb-4">
@@ -88,12 +88,12 @@ onMounted(() => {
           <!-- 左侧：图片和描述 (3份宽度) -->
           <div class="col-span-3 space-y-4">
             <!-- 图片展示区 -->
-            <div class="relative bg-gray-800 rounded-xl overflow-hidden">
+            <div class="relative bg-gray-800 rounded-xl overflow-hidden h-[400px]">
               <img
                 :src="storyboard.imageUrl"
                 :alt="'故事板' + storyboard.shotNumber"
                 @load="handleImageLoad"
-                class="w-full aspect-video object-contain"
+                class="w-full h-full object-contain"
               >
               <!-- 加载状态 -->
               <div
@@ -109,35 +109,41 @@ onMounted(() => {
             </div>
 
             <!-- 描述和提示词 -->
-            <div class="space-y-4">
+            <div class="space-y-3">
               <!-- 画面描述 -->
               <div class="bg-gray-800 rounded-xl p-4">
-                <h3 class="text-white font-medium mb-2 flex items-center">
-                  <span class="w-1 h-4 bg-yellow-400 rounded mr-2"></span>
-                  画面内容描述
-                </h3>
-                <el-input
-                  v-model="storyboard.description"
-                  type="textarea"
-                  :rows="3"
-                  resize="none"
-                  placeholder="请输入画面描述..."
-                />
+                <div class="flex items-start gap-2">
+                  <h3 class="text-white font-medium whitespace-nowrap flex items-center min-w-[90px]">
+                    <span class="w-1 h-4 bg-yellow-400 rounded mr-2"></span>
+                    画面内容
+                  </h3>
+                  <el-input
+                    v-model="storyboard.description"
+                    type="textarea"
+                    :rows="2"
+                    resize="none"
+                    placeholder="请输入画面描述..."
+                    class="flex-1"
+                  />
+                </div>
               </div>
 
               <!-- 提示词输入 -->
               <div class="bg-gray-800 rounded-xl p-4">
-                <h3 class="text-white font-medium mb-2 flex items-center">
-                  <span class="w-1 h-4 bg-yellow-400 rounded mr-2"></span>
-                  提示词
-                </h3>
-                <el-input
-                  v-model="storyboard.prompt"
-                  type="textarea"
-                  :rows="3"
-                  resize="none"
-                  placeholder="输入提示词，用逗号分隔..."
-                />
+                <div class="flex items-start gap-2">
+                  <h3 class="text-white font-medium whitespace-nowrap flex items-center min-w-[90px]">
+                    <span class="w-1 h-4 bg-yellow-400 rounded mr-2"></span>
+                    提示词
+                  </h3>
+                  <el-input
+                    v-model="storyboard.prompt"
+                    type="textarea"
+                    :rows="2"
+                    resize="none"
+                    placeholder="输入提示词，用逗号分隔..."
+                    class="flex-1"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -177,82 +183,84 @@ onMounted(() => {
                 拍摄参数
               </h3>
               
-              <!-- 景别 -->
-              <div class="param-item">
-                <span class="param-label">景别</span>
-                <el-select v-model="storyboard.params.framing" class="w-full">
-                  <el-option
-                    v-for="option in framingOptions"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                  />
-                </el-select>
-              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <!-- 景别 -->
+                <div class="param-item">
+                  <span class="param-label">景别</span>
+                  <el-select v-model="storyboard.params.framing" class="w-full">
+                    <el-option
+                      v-for="option in framingOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </div>
 
-              <!-- 镜头运动 -->
-              <div class="param-item">
-                <span class="param-label">镜头运动</span>
-                <el-select v-model="storyboard.params.movement" class="w-full">
-                  <el-option
-                    v-for="option in cameraMovementOptions"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                  />
-                </el-select>
-              </div>
+                <!-- 镜头运动 -->
+                <div class="param-item">
+                  <span class="param-label">镜头运动</span>
+                  <el-select v-model="storyboard.params.movement" class="w-full">
+                    <el-option
+                      v-for="option in cameraMovementOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </div>
 
-              <!-- 拍摄角度 -->
-              <div class="param-item">
-                <span class="param-label">拍摄角度</span>
-                <el-select v-model="storyboard.params.angle" class="w-full">
-                  <el-option
-                    v-for="option in cameraAngleOptions"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                  />
-                </el-select>
-              </div>
+                <!-- 拍摄角度 -->
+                <div class="param-item">
+                  <span class="param-label">拍摄角度</span>
+                  <el-select v-model="storyboard.params.angle" class="w-full">
+                    <el-option
+                      v-for="option in cameraAngleOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </div>
 
-              <!-- 影调 -->
-              <div class="param-item">
-                <span class="param-label">影调</span>
-                <el-select v-model="storyboard.params.tone" class="w-full">
-                  <el-option
-                    v-for="option in toneOptions"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                  />
-                </el-select>
-              </div>
+                <!-- 影调 -->
+                <div class="param-item">
+                  <span class="param-label">影调</span>
+                  <el-select v-model="storyboard.params.tone" class="w-full">
+                    <el-option
+                      v-for="option in toneOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </div>
 
-              <!-- 对比度 -->
-              <div class="param-item">
-                <span class="param-label">对比度</span>
-                <el-select v-model="storyboard.params.contrast" class="w-full">
-                  <el-option
-                    v-for="option in contrastOptions"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                  />
-                </el-select>
-              </div>
+                <!-- 对比度 -->
+                <div class="param-item">
+                  <span class="param-label">对比度</span>
+                  <el-select v-model="storyboard.params.contrast" class="w-full">
+                    <el-option
+                      v-for="option in contrastOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </div>
 
-              <!-- 色温 -->
-              <div class="param-item">
-                <span class="param-label">色温</span>
-                <el-select v-model="storyboard.params.colorTemp" class="w-full">
-                  <el-option
-                    v-for="option in colorTempOptions"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                  />
-                </el-select>
+                <!-- 色温 -->
+                <div class="param-item">
+                  <span class="param-label">色温</span>
+                  <el-select v-model="storyboard.params.colorTemp" class="w-full">
+                    <el-option
+                      v-for="option in colorTempOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </div>
               </div>
             </div>
 
@@ -277,12 +285,12 @@ onMounted(() => {
 
 <style scoped>
 .container {
-  min-height: calc(100vh - 64px - 48px);
+  min-height: calc(100vh - 64px - 64px);
 }
 
 /* 参数项样式 */
 .param-item {
-  @apply mb-4 last:mb-0;
+  @apply mb-0;
 }
 
 .param-label {
@@ -296,13 +304,20 @@ onMounted(() => {
 
 /* 输入框样式 */
 :deep(.el-textarea__inner) {
-  @apply bg-gray-700 border-gray-600 text-white;
+  @apply bg-gray-700 border-gray-600 text-white overflow-y-auto;
   box-shadow: none !important;
 }
 
-:deep(.el-textarea__inner:hover),
-:deep(.el-textarea__inner:focus) {
-  @apply border-yellow-400;
+:deep(.el-textarea__inner::-webkit-scrollbar) {
+  @apply w-1;
+}
+
+:deep(.el-textarea__inner::-webkit-scrollbar-track) {
+  @apply bg-gray-600 rounded-full;
+}
+
+:deep(.el-textarea__inner::-webkit-scrollbar-thumb) {
+  @apply bg-gray-400 rounded-full hover:bg-gray-300;
 }
 
 /* 下拉框样式 */
