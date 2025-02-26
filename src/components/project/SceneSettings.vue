@@ -22,6 +22,18 @@ const sceneData = ref({
   weather: props.modelValue.weather
 })
 
+// 时间选项
+const timeOptions = [
+  { label: '清晨', value: '清晨' },
+  { label: '早晨', value: '早晨' },
+  { label: '上午', value: '上午' },
+  { label: '中午', value: '中午' },
+  { label: '下午', value: '下午' },
+  { label: '傍晚', value: '傍晚' },
+  { label: '晚上', value: '晚上' },
+  { label: '深夜', value: '深夜' }
+]
+
 // 天气选项
 const weatherOptions = [
   { label: '晴', value: 'sunny' },
@@ -61,12 +73,18 @@ const maxDescLength = 200
       <!-- 时间和天气设定 -->
       <div class="col-span-1 space-y-2">
         <el-form-item label="时间" class="mb-2">
-          <el-time-picker
+          <el-select
             v-model="sceneData.time"
-            format="HH:mm"
             placeholder="选择时间"
             class="w-full"
-          />
+          >
+            <el-option
+              v-for="item in timeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
 
         <el-form-item label="天气" class="mb-0">

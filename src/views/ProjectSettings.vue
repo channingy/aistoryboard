@@ -13,7 +13,7 @@ const router = useRouter()
 // 场景设定数据
 const sceneSettings = ref({
   description: '',
-  time: '',
+  time: '深夜',
   weather: ''
 })
 

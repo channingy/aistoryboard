@@ -38,7 +38,7 @@ const artStyleOptions = [
 // 场景信息
 const sceneInfo = ref({
   description: 'INT. 实验室 - 深夜',
-  time: '23:30',
+  time: '深夜',
   weather: '晴朗',
   characters: ['张三', '李四']
 })
