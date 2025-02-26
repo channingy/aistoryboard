@@ -1,7 +1,8 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { Delete, Upload } from '@element-plus/icons-vue'
+import { Delete, Avatar } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { defaultAvatars, defaultAvatarId } from '@/assets/avatars'
 
 const props = defineProps({
   modelValue: {
@@ -17,7 +18,7 @@ const characterData = ref({
   id: props.modelValue.id,
   name: props.modelValue.name || '',
   description: props.modelValue.description || '',
-  avatar: props.modelValue.avatar || ''
+  avatarId: props.modelValue.avatarId || defaultAvatarId
 })
 
 // 监听数据变化并触发更新
@@ -25,28 +26,19 @@ watch(characterData, (newVal) => {
   emit('update:modelValue', newVal)
 }, { deep: true })
 
-// 处理头像上传
-const handleAvatarUpload = (file) => {
-  const isImage = file.type.startsWith('image/')
-  const isLt2M = file.size / 1024 / 1024 < 2
+// 显示头像选择对话框
+const showAvatarSelector = ref(false)
 
-  if (!isImage) {
-    ElMessage.error('只能上传图片文件！')
-    return false
-  }
-  if (!isLt2M) {
-    ElMessage.error('图片大小不能超过 2MB！')
-    return false
-  }
+// 选择头像
+const selectAvatar = (avatarId) => {
+  characterData.value.avatarId = avatarId
+  showAvatarSelector.value = false
+}
 
-  // 创建本地预览URL
-  const reader = new FileReader()
-  reader.readAsDataURL(file)
-  reader.onload = (e) => {
-    characterData.value.avatar = e.target.result
-  }
-
-  return false // 阻止自动上传
+// 获取当前头像SVG
+const getCurrentAvatarSvg = () => {
+  const avatar = defaultAvatars.find(a => a.id === characterData.value.avatarId)
+  return avatar ? avatar.svg : defaultAvatars[0].svg
 }
 
 // 删除角色
@@ -68,29 +60,38 @@ const handleDelete = () => {
 
     <el-form :model="characterData" label-position="top">
       <div class="flex flex-col md:flex-row gap-6">
-        <!-- 头像上传区域 -->
+        <!-- 头像选择区域 -->
         <el-form-item class="mb-0">
-          <el-upload
-            class="avatar-uploader"
-            :show-file-list="false"
-            :before-upload="handleAvatarUpload"
+          <div 
+            class="avatar-container has-avatar"
+            @click="showAvatarSelector = true"
           >
-            <div
-              class="avatar-container"
-              :class="{ 'has-avatar': characterData.avatar }"
-            >
-              <img
-                v-if="characterData.avatar"
-                :src="characterData.avatar"
-                class="avatar-image"
-                alt="角色头像"
+            <div class="avatar-image" v-html="getCurrentAvatarSvg()"></div>
+            <div class="avatar-select-btn">
+              <el-icon><Avatar /></el-icon>
+            </div>
+          </div>
+          
+          <!-- 头像选择对话框 -->
+          <el-dialog
+            v-model="showAvatarSelector"
+            title="选择角色头像"
+            width="360px"
+            align-center
+          >
+            <div class="avatar-selector-grid">
+              <div 
+                v-for="avatar in defaultAvatars" 
+                :key="avatar.id"
+                class="avatar-option"
+                :class="{ 'is-selected': characterData.avatarId === avatar.id }"
+                @click="selectAvatar(avatar.id)"
               >
-              <el-icon v-else class="avatar-icon"><Upload /></el-icon>
-              <div v-if="!characterData.avatar" class="avatar-text">
-                点击上传头像
+                <div class="avatar-option-image" v-html="avatar.svg"></div>
+                <div class="avatar-option-name">{{ avatar.name }}</div>
               </div>
             </div>
-          </el-upload>
+          </el-dialog>
         </el-form-item>
 
         <!-- 角色信息 -->
@@ -140,40 +141,84 @@ const handleDelete = () => {
 .avatar-container {
   width: 80px;
   height: 80px;
-  border: 2px dashed #e5e7eb;
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
   display: flex;
-  flex-direction: column;
+  position: relative;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  overflow: hidden;
 }
 
 .avatar-container:hover {
   border-color: var(--el-color-primary);
 }
 
-.avatar-container.has-avatar {
-  border-style: solid;
-}
-
 .avatar-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.avatar-icon {
-  font-size: 24px;
-  color: #9ca3af;
-  margin-bottom: 4px;
-}
-
-.avatar-text {
+.avatar-select-btn {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 2px 0;
   font-size: 12px;
-  color: #9ca3af;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.avatar-container:hover .avatar-select-btn {
+  opacity: 1;
+}
+
+.avatar-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.avatar-option {
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.avatar-option:hover {
+  border-color: var(--el-color-primary);
+  background-color: var(--el-color-primary-light-9);
+}
+
+.avatar-option.is-selected {
+  border-color: var(--el-color-primary);
+  background-color: var(--el-color-primary-light-9);
+}
+
+.avatar-option-image {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 8px;
+}
+
+.avatar-option-name {
+  font-size: 14px;
+  color: #333;
+  text-align: center;
 }
 
 :deep(.el-input__wrapper),

@@ -23,7 +23,7 @@ const characters = ref([
     id: 1,
     name: '',
     description: '',
-    avatar: ''
+    avatarId: 'male'
   }
 ])
 
@@ -36,7 +36,7 @@ const addCharacter = () => {
     id: nextCharacterId++,
     name: '',
     description: '',
-    avatar: ''
+    avatarId: 'male'
   })
 }
 
